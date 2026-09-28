@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FiltroComún Miravalle — Diseño Inclusivo</title>
+  
+  <style>
+    /* ============================================================
+       1. VARIABLES GLOBALES (ESTILO EDITORIAL + WCAG AAA)
+       ============================================================ */
+    :root {
+      --bg-light: #f8f9fa;
+      --bg-dark: #0a1118;
+      --surface-card: #ffffff;
+      --text-main: #11161b;
+      --text-muted: #5a6571;
+      --text-on-dark: #f0f4f8;
+      --accent: #0077b6;
+      --accent-glow: #00b4d8;
+      --focus-ring: #ff7b00;
+      --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --transition-smooth: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 18px;
+    }
+
+    body {
+      font-family: var(--font-display);
+      background-color: var(--bg-light);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Respeto a usuarios con sensibilidad motriz/vestibular (Principio POUR: Operable) */
+    @media (prefers-reduced-motion: reduce) {
+      *, html {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+
+    /* Enfoque visible accesible */
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 4px;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 1.5rem;
+      background: var(--focus-ring);
+      color: #000;
+      padding: 0.8rem 1.2rem;
+      font-weight: 700;
+      z-index: 10000;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: top 0.2s ease;
+    }
+    .skip-link:focus {
+      top: 1.5rem;
+    }
+
+    /* ============================================================
+       2. NAVEGACIÓN SUSPENDIDA Y MINIMALISTA (ESTILO POLLEN)
+       ============================================================ */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      mix-blend-mode: difference; /* Efecto dinámico de color sobre cualquier fondo */
+      padding: 1.8rem 3rem;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    nav a {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      position: relative;
+      padding: 0.4rem 0;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: #ffffff;
+      transition: var(--transition-smooth);
+    }
+
+    nav a:hover::after, nav a:focus-visible::after {
+      width: 100%;
+    }
+
+    /* ============================================================
+       3. ESTRUCTURA Y SEPARACIÓN DE PRESENTACIONES (SECCIONES)
+       ============================================================ */
+    section.slide {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 7rem 3rem 5rem;
+      position: relative;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .container {
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      display: block;
+    }
+
+    /* Tipografía masiva de impacto */
+    .title-massive {
+      font-size: clamp(2.5rem, 5.5vw, 5.2rem);
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 2rem;
+      max-width: 1100px;
+    }
+
+    .lead-text {
+      font-size: clamp(1.2rem, 2vw, 1.6rem);
+      color: var(--text-muted);
+      max-width: 780px;
+      line-height: 1.5;
+      margin-bottom: 3rem;
+    }
+
+    /* ============================================================
+       4. ANIMACIONES AL HACER SCROLL (FADE IN UP)
+       ============================================================ */
+    .reveal-item {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal-item.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Retardo escalonado de presentación */
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.25s; }
+    .delay-3 { transition-delay: 0.4s; }
+
+    /* ============================================================
+       5. TARJETAS EDITORIALES DE PRESENTACIÓN Y COMPOSICIÓN
+       ============================================================ */
+    .presentation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 2.5rem;
+      margin-top: 2rem;
+    }
+
+    .presentation-card {
+      background: var(--surface-card);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 3rem 2.5rem;
+      border-radius: 4px;
+      position: relative;
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .presentation-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-number {
+      font-size: 3rem;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.15);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+    }
+
+    .presentation-card h3 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .presentation-card p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    /* Botón accesible minimalista */
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--text-main);
+      color: #ffffff;
+      padding: 1.2rem 2.5rem;
+      font-weight: 600;
+      font-size: 1.05rem;
+      text-decoration: none;
+      border-radius: 50px;
+      transition: var(--transition-smooth);
+      border: 2px solid transparent;
+    }
+
+    .btn-action:hover {
+      background: var(--accent);
+      transform: scale(1.03);
+    }
+
+    /* ============================================================
+       6. SECCIÓN OSCURA INMERSIVA (DIVISIÓN CONCEPTUAL)
+       ============================================================ */
+    .slide-dark {
+      background-color: var(--bg-dark);
+      color: var(--text-on-dark);
+      border-bottom: none !important;
+    }
+
+    .slide-dark .title-massive {
+      color: #ffffff;
+    }
+
+    .slide-dark .lead-text {
+      color: #9cb1c5;
+    }
+
+    .slide-dark .presentation-card {
+      background: #121c24;
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .slide-dark .presentation-card:hover {
+      border-color: var(--accent-glow);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .slide-dark .card-number {
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .slide-dark .presentation-card h3 {
+      color: #ffffff;
+    }
+
+    .slide-dark .presentation-card p {
+      color: #9cb1c5;
+    }
+
+    /* ============================================================
+       7. FORMULARIO MINIMALISTA EDITORIAL
+       ============================================================ */
+    .form-minimal {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .form-group-full {
+      grid-column: 1 / -1;
+    }
+
+    .form-minimal label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-minimal input, .form-minimal select {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid #b2c2cd;
+      padding: 0.9rem 0;
+      font-size: 1.2rem;
+      font-family: inherit;
+      color: var(--text-main);
+      transition: var(--transition-smooth);
+    }
+
+    .form-minimal input:focus, .form-minimal select:focus {
+      outline: none;
+      border-bottom-color: var(--accent);
+    }
+
+    /* PIE DE PÁGINA */
+    footer {
+      padding: 4rem 3rem;
+      background: var(--bg-dark);
+      color: #8b99a6;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      header { padding: 1.5rem; }
+      section.slide { padding: 6rem 1.5rem 4rem; }
+      .form-minimal { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ENLACE ACCESIBLE DIRECTO AL CONTENIDO (POUR: Operable) -->
+  <a href="#contenido-principal" class="skip-link">Saltar al contenido principal</a>
+
+  <!-- CABECERA FLOTANTE DE ALTO IMPACTO -->
+  <header role="banner">
+    <div class="nav-container">
+      <a href="#inicio" class="brand" aria-label="Inicio de FiltroComún Miravalle">FiltroComún</a>
+      <nav role="navigation" aria-label="Navegación general">
+        <ul>
+          <li><a href="#proceso">Proceso</a></li>
+          <li><a href="#modelo">Modelo</a></li>
+          <li><a href="#solicitar">Solicitud</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido-principal" role="main">
+
+    <!-- SECCIÓN 1: PRESENTACIÓN PRINCIPAL (HÉROE) -->
+    <section id="inicio" class="slide" aria-labelledby="hero-title">
+      <div class="container">
+        <span class="eyebrow reveal-item">Negocio Inclusivo • Miravalle</span>
+        <h1 id="hero-title" class="title-massive reveal-item delay-1">
+          Pureza esencial.<br>Dignidad en cada gota de tu hogar.
+        </h1>
+        <p class="lead-text reveal-item delay-2">
+          Un modelo diseñado para resolver el problema del agua turbia y con olor en Miravalle mediante microfiltración accesible por etapas, sin deudas ni barreras.
+        </p>
+        <div class="reveal-item delay-3">
+          <a href="#solicitar" class="btn-action">
+            <span>Solicitar purificador ($35/sem)</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: SEPARACIÓN DE PRESENTACIÓN — PROCESO TÉCNICO -->
+    <section id="proceso" class="slide" aria-labelledby="proceso-title">
+      <div class="container">
+        <span class="eyebrow reveal-item">Ingeniería Humana</span>
+        <h2 id="proceso-title" class="title-massive reveal-item delay-1">
+          Filtración transparente en 3 etapas.
+        </h2>
+        <p class="lead-text reveal-item delay-2">
+          La tecnología se adapta al contexto social: simple de instalar, sin mantenimiento complejo y con inspección visual inmediata.
+        </p>
+
+        <div class="presentation-grid">
+          <!-- Tarjeta 1 -->
+          <article class="presentation-card reveal-item delay-1">
+            <span class="card-number" aria-hidden="true">01</span>
+            <div>
+              <h3>Retención de sedimentos</h3>
+              <p>El agua de la red municipal ingresa a una carcasa translúcida donde se separan lodos, tierra y residuos de óxido ferroso al instante.</p>
+            </div>
+          </article>
+
+          <!-- Tarjeta 2 -->
+          <article class="presentation-card reveal-item delay-2">
+            <span class="card-number" aria-hidden="true">02</span>
+            <div>
+              <h3>Neutralización de olores</h3>
+              <p>Un bloque de carbón catalítico activado elimina sabores fétidos y cloro residual, asegurando agua cristalina para cocinar y beber.</p>
+            </div>
+          </article>
+
+          <!-- Tarjeta 3 -->
+          <article class="presentation-card reveal-item delay-3">
+            <span class="card-number" aria-hidden="true">03</span>
+            <div>
+              <h3>Economía de recambio</h3>
+              <p>El cartucho saturado se canjea en la tiendita de tu andador con 30% de bonificación al reintegrar el envase para su reciclaje comunitario.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: PRESENTACIÓN EN MODO OSCURO (ESTÉTICA INMERSIVA DE ESTUDIO) -->
+    <section id="modelo" class="slide slide-dark" aria-labelledby="modelo-title">
+      <div class="container">
+        <span class="eyebrow reveal-item" style="color: var(--accent-glow);">Impacto en la Base de la Pirámide</span>
+        <h2 id="modelo-title" class="title-massive reveal-item delay-1">
+          Ahorro del 70% frente al garrafón comercial.
+        </h2>
+        <p class="lead-text reveal-item delay-2">
+          Cambiamos el esquema asistencialista por sostenibilidad económica: microfinanciamiento barrial coordinado por vecinos embajadores.
+        </p>
+
+        <div class="presentation-grid">
+          <div class="presentation-card reveal-item delay-1">
+            <span class="card-number" aria-hidden="true">$35</span>
+            <div>
+              <h3>Abonos semanales</h3>
+              <p>Sin intereses bancarios ni contratos forzosos. Pagos directos en las tiendas aliadas de las secciones de Miravalle.</p>
+            </div>
+          </div>
+
+          <div class="presentation-card reveal-item delay-2">
+            <span class="card-number" aria-hidden="true">100%</span>
+            <div>
+              <h3>Acompañamiento local</h3>
+              <p>Embajadores de manzana capacitados brindan asistencia domiciliaria y pruebas en vivo sin costo adicional.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: FORMULARIO EDITORIAL LIMPIO -->
+    <section id="solicitar" class="slide" aria-labelledby="solicitud-title">
+      <div class="container">
+        <span class="eyebrow reveal-item">Contacto Directo</span>
+        <h2 id="solicitud-title" class="title-massive reveal-item delay-1">
+          Empieza hoy con agua limpia.
+        </h2>
+        <p class="lead-text reveal-item delay-2">
+          Déjanos tus datos para coordinar una prueba del agua en tu andador o manzana.
+        </p>
+
+        <form action="#" method="post" class="form-minimal reveal-item delay-3" novalidate>
+          <div>
+            <label for="nombre-completo">Nombre y Apellido</label>
+            <input type="text" id="nombre-completo" name="nombre" placeholder="Ej. Patricia Morales" required autocomplete="name">
+          </div>
+
+          <div>
+            <label for="telefono-movil">Teléfono o WhatsApp</label>
+            <input type="tel" id="telefono-movil" name="telefono" placeholder="10 dígitos numéricos" required pattern="[0-9]{10}">
+          </div>
+
+          <div class="form-group-full">
+            <label for="andador-direccion">Andador / Manzana (Miravalle)</label>
+            <input type="text" id="andador-direccion" name="direccion" placeholder="Ej. Andador Pedro de Anda, Depto. 201" required>
+          </div>
+
+          <div class="form-group-full" style="margin-top: 1.5rem;">
+            <button type="submit" class="btn-action">
+              <span>Enviar solicitud comunitaria</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer role="contentinfo">
+    <div class="container" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem;">
+      <p>© FiltroComún Miravalle — Modelo de Negocio Inclusivo (Tlaquepaque, Jalisco).</p>
+      <p>Diseñado bajo metodología POUR y estándares WCAG 2.1.</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPT PARA ANIMACIONES Y APARICIÓN AL HACER SCROLL -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Detección de elementos al desplazarse (Intersection Observer)
+      const reveals = document.querySelectorAll('.reveal-item');
+      
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            obs.unobserve(entry.target); // Se activa una sola vez para mantener rendimiento y limpieza
+          }
+        });
+      }, {
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px'
+      });
+
+      reveals.forEach(el => observer.observe(el));
+    });
+  </script>
+</body>
+</html>
